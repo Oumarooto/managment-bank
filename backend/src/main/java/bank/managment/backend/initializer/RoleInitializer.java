@@ -5,11 +5,13 @@ import bank.managment.backend.service.IRoleService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
 @Slf4j
+@Order(1)
 public class RoleInitializer implements CommandLineRunner {
 
     IRoleService roleService;
