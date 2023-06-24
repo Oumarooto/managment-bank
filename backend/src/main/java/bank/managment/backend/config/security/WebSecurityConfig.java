@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.session.SessionManagementFilter;
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true)
@@ -25,6 +26,8 @@ public class WebSecurityConfig {
     private UserDetailsService userDetailsService;
 
     private AuthEntryPointJwt unauthorizedHandler;
+
+    CorsFilter corsFilter;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -48,14 +51,21 @@ public class WebSecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        //return new BCryptPasswordEncoder();
-        return new MyBCryptPasswordEncoder();
-        //return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
+        //return new MyBCryptPasswordEncoder();
     }
+
+    /*@Bean
+    CorsFilter corsFilter() {
+        CorsFilter corsFilter = new CorsFilter();
+        return corsFilter;
+    }*/
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http
+                .addFilterBefore(corsFilter, SessionManagementFilter.class)
+                .csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->

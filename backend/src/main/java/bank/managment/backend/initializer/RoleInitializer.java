@@ -18,7 +18,7 @@ public class RoleInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        if (!roleService.findByCode("ADMIN").isPresent()){
+        if (roleService.findByCode("ADMIN").isEmpty()){
             Role role1 = new Role();
             role1.setCode("ADMIN");
             role1.setLabel("Bank Administrator");

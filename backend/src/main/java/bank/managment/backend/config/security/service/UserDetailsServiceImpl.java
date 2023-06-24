@@ -1,10 +1,11 @@
 package bank.managment.backend.config.security.service;
 
 import bank.managment.backend.config.security.UserDetailsImpl;
+import bank.managment.backend.entities.Credentials;
 import bank.managment.backend.entities.User;
+import bank.managment.backend.service.ICredentialsService;
 import bank.managment.backend.service.IUserService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,11 +18,15 @@ import java.util.Optional;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     IUserService userService;
+    ICredentialsService credentialsService;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> userOptional = userService.findByLogin(username);
         if (userOptional.isPresent()) {
-            return new UserDetailsImpl(userOptional.get());
+            Optional<Credentials> optionalCredentials = credentialsService.findByLogin(username);
+            if (optionalCredentials.isPresent()) {
+                return new UserDetailsImpl(userOptional.get(), optionalCredentials.get());
+            }
         }
         return null;
     }
